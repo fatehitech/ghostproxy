@@ -26,7 +26,7 @@ var Ghosts = {
       Ghosts.findOne({ fqdn: fqdn }).then(function(ghost) {
         if (ghost && ghost.proxyPath) return resolve(ghost.proxyPath);
         else return reject(new Error('No proxy path defined for '+fqdn));
-      });
+      }, reject);
     });
   }
 }
