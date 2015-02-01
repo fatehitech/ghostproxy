@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 var logger = require('./src/logger')
-  , app = require('./src/app.js')
+  , app = require('./src/app')
   , fs = require('fs')
   , prod = process.env.NODE_ENV === 'production'
 
 var ports = {
-  api: { http: 4999 },
   proxy: {
     http: prod ? 80 : 4080,
     https: prod ? 443 : 4443
