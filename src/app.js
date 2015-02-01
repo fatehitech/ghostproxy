@@ -12,17 +12,6 @@ if (process.env.NODE_ENV === "development") {
   });
 }
 
-// Cross Domain
-var allowCrossDomain = function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", process.env.ALLOW_ORIGIN || "*");
-  res.header("Access-Control-Expose-Headers", "X-Filename");
-  res.header("Access-Control-Allow-Headers", "Referer, Range, Accept-Encoding, Origin, X-Requested-With, Content-Type, Accept, Authorization");
-  res.header('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS');
-  next();
-};
-
-api.app.use('/api/v1/', allowCrossDomain, require('./routes'));
-
 api.app.use(function (err, req, res, next) {
   logger.error(err.message)
   logger.error(err.stack);

@@ -9,7 +9,6 @@ function generateSecret() {
 }
 
 if (!secret) {
-  logger.warn('API_SECRET is unset. Checking storage...')
   secret = storage.getItem('__api_secret')
   if (secret) {
     logger.info('using previously saved secret: '+secret);

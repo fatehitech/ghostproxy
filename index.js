@@ -1,7 +1,6 @@
 #!/usr/bin/env node
-var logger = console
-  , app = require('../src/server/app.js')
-  , target = require('../src/target')
+var logger = require('./src/logger')
+  , app = require('./src/app.js')
   , fs = require('fs')
   , prod = process.env.NODE_ENV === 'production'
 

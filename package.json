@@ -4,7 +4,7 @@
   "description": "Reverse proxy web requests to ghost VMs",
   "main": "src/server/app.js",
   "scripts": {
-    "start": "node bin/ghostproxy",
+    "start": "node index.js",
     "test": "mocha --recursive test/unit",
     "tdd": "watchy -w . -i '/\\.|\\.json|data|drops|coverage$' -- mocha -R min --recursive test/unit 2>&1 | simple-stacktrace",
     "autocover": "watchy -w . -i '/\\.|node_modules|\\.json|data|coverage$' -- istanbul cover _mocha -- --recursive test/unit",
@@ -21,13 +21,17 @@
   "license": "",
   "private": true,
   "dependencies": {
+    "bluebird": "^2.9.4",
     "body-parser": "^1.6.7",
     "express": "^4.8.7",
     "http-proxy": "^1.3.0",
     "lodash": "^2.4.1",
     "mkdirp": "^0.5.0",
+    "mongodb": "^1.4.29",
     "node-localstorage": "^0.3.4",
-    "uri-js": "~1.4.2"
+    "redis": "^0.12.1",
+    "uri-js": "~1.4.2",
+    "winston": "^0.8.3"
   },
   "devDependencies": {
     "chai": "^1.9.1",

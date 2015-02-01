@@ -1,0 +1,28 @@
+<head>
+  <title>ghostproxy admin</title>
+</head>
+
+<body>
+  <h1>Ghosts</h1>
+  <ul>{{> ghostIndex}}</ul>
+  <h2>New Ghost</h2>
+  {{> insertGhostForm}}
+  <hr>
+</body>
+
+<template name="ghostIndex">
+  {{#each allGhosts}}
+    {{> ghost}}
+  {{/each}}
+</template>
+
+<template name="ghost">
+  <li class="ghost">
+    <pre>{{prettyJSON}}</pre>
+    <button class="destroy">Remove</button>
+  </li>
+</template>
+
+<template name="insertGhostForm">
+  {{> quickForm collection="Ghosts" id="insertGhostForm" type="insert"}}
+</template>

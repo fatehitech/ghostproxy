@@ -1,8 +1,8 @@
-var logger = console
-  , target = require('../target')
-  , httpProxy = require('http-proxy')
-  , proxy = httpProxy.createProxyServer({})
-  , URI = require('uri-js')
+var logger = require('./logger');
+var httpProxy = require('http-proxy');
+var proxy = httpProxy.createProxyServer({});
+var URI = require('uri-js');
+var Ghosts = require('./ghosts');
 
 proxy.on('error', function(e) {
   logger.error('Proxy error: '+e.message+'\n'+e.stack)
@@ -10,7 +10,7 @@ proxy.on('error', function(e) {
 
 var gatewayError = function(res) {
   res.writeHead(502, { 'Content-Type': 'text/plain' });
-  res.write('Internal Gateway Error');
+  res.write('Internal Gateway Error\n');
   res.end()
 }
 
@@ -26,19 +26,16 @@ var handler = function (req, cb) {
     logger.warn('No host header was provided. Returning 404')
     return cb(notFound);
   }
-  var fqdn = req.headers.host.split(':')[0]
-  target.get(fqdn, function (err, target) {
-    if (err) {
-      logger.error(err.message+err.backtrace);
-      return cb(gatewayError)
-    } else if (target) {
-      var opts = { target: URI.parse(target) }
-      cb(null, opts, fqdn)
-    } else {
-      logger.warn('No target defined for host '+fqdn+'. Returning 404');
-      return cb(notFound)
-    }
-  })
+  var fqdn = req.headers.host.split(':')[0];
+  Ghosts.lookupProxyPath(fqdn).then(function(path) {
+    cb(null, { target: URI.parse(path) }, fqdn);
+      //logger.warn('No target defined for host '+fqdn+'. Returning 404');
+      //return cb(notFound)
+  }).error(errHandler).catch(errHandler);
+  var errHandler = function(err) {
+    logger.error(err.stack);
+    cb(gatewayError);
+  }
 }
 
 var requestListener = function(req, res) {
