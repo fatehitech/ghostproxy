@@ -25,7 +25,7 @@ var Ghosts = {
     return new Promise(function(resolve, reject) {
       Ghosts.findOne({ fqdn: fqdn }).then(function(ghost) {
         if (ghost && ghost.proxyPath) return resolve(ghost.proxyPath);
-        else return reject(new Error('No ghost defined with that fqdn'));
+        else return reject(new Error('No proxy path defined for '+fqdn));
       });
     });
   }

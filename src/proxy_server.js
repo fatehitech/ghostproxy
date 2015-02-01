@@ -28,21 +28,20 @@ var handler = function (req, cb) {
   }
   var fqdn = req.headers.host.split(':')[0];
   Ghosts.lookupProxyPath(fqdn).then(function(path) {
-    cb(null, { target: URI.parse(path) }, fqdn);
-      //logger.warn('No target defined for host '+fqdn+'. Returning 404');
-      //return cb(notFound)
-  }).error(errHandler).catch(errHandler);
-  var errHandler = function(err) {
-    logger.error(err.stack);
-    cb(gatewayError);
-  }
+    cb(null, { path: URI.parse(path) }, fqdn);
+    logger.warn('No path defined for host '+fqdn+'. Returning 404');
+    return cb(notFound)
+  }, function(err) {
+    logger.warn(err.message);
+    cb(notFound);
+  })
 }
 
 var requestListener = function(req, res) {
   handler(req, function(err, opts, fqdn) {
     if (err) return err(res);
     proxy.web(req, res, opts);
-    //logger.info('Proxied HTTP '+fqdn+' => '+opts.target.scheme+'://'+opts.target.host+':'+opts.target.port);
+    logger.info('Proxied HTTP '+fqdn+' => '+opts.path.scheme+'://'+opts.path.host+':'+opts.path.port);
   })
 }
 
@@ -50,7 +49,7 @@ var websocketListener = function(req, socket, head) {
   handler(req, function(err, opts, fqdn) {
     if (err) return false;
     proxy.ws(req, socket, head, opts);
-    //logger.info('Proxied WebSocket '+fqdn+' => '+opts.target.scheme+'://'+opts.target.host+':'+opts.target.port);
+    logger.info('Proxied WebSocket '+fqdn+' => '+opts.path.scheme+'://'+opts.path.host+':'+opts.path.port);
   })
 }
 
