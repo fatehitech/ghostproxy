@@ -11,12 +11,16 @@ var handler = function (req, cb) {
     return cb(notFound);
   }
   var fqdn = req.headers.host.split(':')[0];
-  Ghosts.lookupProxyPath(fqdn).then(function(path) {
-    cb(null, { path: URI.parse(path) }, fqdn);
-  }, function(err) {
-    logger.warn('No path defined for host '+fqdn+'. Returning 404');
-    return cb(notFound)
+
+  Ghosts.findOne({ fqdn: fqdn }).then(function(ghost) {
+    if (ghost) {
+      cb(null, { path: URI.parse(ghost.proxyPath) }, fqdn);
+    } else {
+      logger.warn('No path defined for host '+fqdn+'. Returning 404');
+      return cb(notFound)
+    }
   })
+
 }
 
 proxy.on('error', function(e) {

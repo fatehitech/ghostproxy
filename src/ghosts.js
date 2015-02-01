@@ -20,14 +20,6 @@ var Ghosts = {
     return Ghosts.find(query).then(function(results) {
       return results[0];
     })
-  },
-  lookupProxyPath: function(fqdn) {
-    return new Promise(function(resolve, reject) {
-      Ghosts.findOne({ fqdn: fqdn }).then(function(ghost) {
-        if (ghost && ghost.proxyPath) return resolve(ghost.proxyPath);
-        else return reject(new Error('No proxy path defined for '+fqdn));
-      }, reject);
-    });
   }
 }
 
