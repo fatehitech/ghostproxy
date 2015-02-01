@@ -4,6 +4,21 @@ var proxy = httpProxy.createProxyServer({});
 var URI = require('uri-js');
 var Ghosts = require('./ghosts');
 
+var handler = function (req, cb) {
+  var host = req.headers.host
+  if (!host) {
+    logger.warn('No host header was provided. Returning 404')
+    return cb(notFound);
+  }
+  var fqdn = req.headers.host.split(':')[0];
+  Ghosts.lookupProxyPath(fqdn).then(function(path) {
+    cb(null, { path: URI.parse(path) }, fqdn);
+  }, function(err) {
+    logger.warn('No path defined for host '+fqdn+'. Returning 404');
+    return cb(notFound)
+  })
+}
+
 proxy.on('error', function(e) {
   logger.error('Proxy error: '+e.message+'\n'+e.stack)
 });
@@ -18,23 +33,6 @@ var notFound = function(res) {
   res.writeHead(404, { 'Content-Type': 'text/plain' });
   res.write('Not found\n');
   res.end();
-}
-
-var handler = function (req, cb) {
-  var host = req.headers.host
-  if (!host) {
-    logger.warn('No host header was provided. Returning 404')
-    return cb(notFound);
-  }
-  var fqdn = req.headers.host.split(':')[0];
-  Ghosts.lookupProxyPath(fqdn).then(function(path) {
-    cb(null, { path: URI.parse(path) }, fqdn);
-    logger.warn('No path defined for host '+fqdn+'. Returning 404');
-    return cb(notFound)
-  }, function(err) {
-    logger.warn(err.message);
-    cb(notFound);
-  })
 }
 
 var requestListener = function(req, res) {
