@@ -47,6 +47,9 @@ GhostProvisioner.prototype.provision = function(ghost) {
       host: ghost.ipAddress,
       port: 22,
       username: 'root',
+      hostVerifier: function() {
+        return true;
+      },
       privateKey: require('fs').readFileSync(privKeyPath)
     });
   }).then(function() {
