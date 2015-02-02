@@ -1,5 +1,6 @@
 var Promise = require('bluebird');
 var GhostProvisioner = require('./ghost_provisioner');
+var Ghosts = require('./ghosts');
 var promiseCreateVPS = require('./instance_provisioner/promise_create_vps');
 module.exports = VPS;
 function VPS(ghost) {
@@ -35,7 +36,9 @@ VPS.prototype.createWithProvisioner = function(options) {
   var provisioner = new GhostProvisioner(options);
   var ghost = this.ghost;
   return this.createDroplet().then(function() {
-    return provisioner.provision(ghost);
+    return Ghosts.findOne({ _id: ghost._id }).then(function(ghost) {
+      return provisioner.provision(ghost);
+    })
   })
 }
 

@@ -39,7 +39,7 @@ Ghosts.attachSchema({
     autoform: {
       rows: 10
     },
-    defaultValue: 'apt-get install nginx'
+    defaultValue: 'apt-get -yq install nginx'
   },
   ipAddress: {
     type: String,

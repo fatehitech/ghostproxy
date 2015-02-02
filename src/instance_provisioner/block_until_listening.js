@@ -26,7 +26,12 @@ module.exports = function(options) {
 
       client.connect(options.port, options.ip)
 
+      if (options.http) {
+        client.write('GET /\n\n');
+      }
+
       client.on('data', function(data) {
+        console.log(data.toString());
         if (pattern.test(data.toString())) {
           blocking = false;
           client.destroy(); // kill client after server's response

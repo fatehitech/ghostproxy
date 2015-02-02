@@ -6,7 +6,8 @@ var logger = require('../src/logger');
 var Config = {
   mongoURI: 'mongodb://localhost:3001/meteor',
   ssh: {
-    publicKeyPath: path.join(__dirname, 'id_rsa.pub')
+    publicKeyPath: path.join(__dirname, 'id_rsa.pub'),
+    privateKeyPath: path.join(__dirname, 'id_rsa')
   }
 }
 
