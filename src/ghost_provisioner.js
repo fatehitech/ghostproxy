@@ -43,6 +43,7 @@ GhostProvisioner.prototype.provision = function(ghost) {
     match: "SSH"
   }).then(function(ip) {
     logger.info('SSH connection now possible');
+    if (ghost.isProvisioned) return true;
     return self.runRemoteScript(self.script, {
       host: ghost.ipAddress,
       port: 22,
