@@ -29,7 +29,7 @@ Ghosts.attachSchema({
   provisioner: {
     type: String,
     label: 'Provisioner',
-    regEx: /^bash|ansible|salt$/,
+    regEx: /^bash$/,
     defaultValue: 'bash'
   },
   provisionerScript: {
