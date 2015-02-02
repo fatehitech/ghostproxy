@@ -11,6 +11,16 @@ Template.ghostIndex.events({
   }
 });
 
+Template.insertGhostForm.rendered = function() {
+  AutoForm.hooks({
+    insertGhostForm: {
+      onError: function(operation, error, template) {
+        console.log(arguments);
+      }
+    }
+  });
+}
+
 Template.ghost.helpers({
   'prettyJSON': function() {
     return JSON.stringify(this, null, 2);
