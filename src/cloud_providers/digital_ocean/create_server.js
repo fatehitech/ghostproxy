@@ -15,12 +15,12 @@ module.exports = function(client) {
     .then(function(sizes) {
       var size = _.find(sizes, { memory: ghost.memorySize })
       var region = _.find(size.regions, function(rslug) {
-        if (ghost.region === rslug) return true
-      })
-    return {
-      region: region,
-      size: size.slug
-    }
+        if (ghost.region === rslug) return true;
+      });
+      return {
+        region: region,
+        size: size.slug
+      }
     }).then(function(data) {
       return {
         image: ghost.digitalOceanImage,
@@ -36,6 +36,8 @@ module.exports = function(client) {
       var droplet = ghost.droplet;
       var addr = _.find(droplet.networks.v4, { type: 'public' }).ip_address
       return Ghosts.updateIpAddress(ghost, addr);
+    }).then(function(ghost) {
+      done(null, ghost);
     }).catch(done).error(done)
   }
 }

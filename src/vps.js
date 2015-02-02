@@ -1,4 +1,5 @@
 var Promise = require('bluebird');
+var GhostProvisioner = require('./ghost_provisioner');
 var promiseCreateVPS = require('./instance_provisioner/promise_create_vps');
 module.exports = VPS;
 function VPS(ghost) {
@@ -16,7 +17,7 @@ VPS.prototype.create = function() {
   }
 }
 
-VPS.prototype.createWithProvisioner = function(options) {
+VPS.prototype.createDroplet = function() {
   this.ghost.memorySize = 512;
   this.ghost.region = 'sfo1';
   this.ghost.digitalOceanImage = 'ubuntu-14-04-x64';
@@ -27,13 +28,17 @@ VPS.prototype.createWithProvisioner = function(options) {
         console.log(explanation);
       }
     }
-  })(this.ghost).then(function() {
-    console.log('created it');
-  });
+  })(this.ghost);
+}
+
+VPS.prototype.createWithProvisioner = function(options) {
+  var provisioner = new GhostProvisioner(options);
+  var ghost = this.ghost;
+  return this.createDroplet().then(function() {
+    return provisioner.provision(ghost);
+  })
 }
 
 VPS.prototype.createWithSnapshot = function(snapshotId) {
-  return new Promise(function(resolve, reject) {
-    
-  });
+  return this.createDroplet()
 }

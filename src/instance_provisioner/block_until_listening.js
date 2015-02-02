@@ -1,6 +1,6 @@
 var Promise = require('bluebird')
 var net = require('net');
-var logger = require('../../logger')
+var logger = require('../logger')
 var backoff = require('backoff')
 
 module.exports = function(options) {
