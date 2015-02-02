@@ -11,15 +11,16 @@ function GhostProvisioner(opts) {
   this.script = opts.script;
 }
 
-GhostProvisioner.prototype.runRemoteScript = function(connectOpts) {
-  var script = this.script;
+GhostProvisioner.prototype.runRemoteScript = function(script, connectOpts) {
   return new Promise(function(resolve, reject) {
     var conn = new Client();
     conn.on('ready', function() {
       conn.exec(script, function(err, stream) {
-        if (err) return reject(err);
-        stream.on('end', function() {
-        }).on('close', function(exitCode, signal) {
+        if (err) {
+          logger.warn('ssh was not ready -- retrying');
+          runRemoteScript(script, connectOpts);
+        }
+        stream.on('close', function(exitCode, signal) {
           conn.end();
           if (exitCode === 0) return resolve();
           else reject(new Error("Remote script exited with non-zero status"));
@@ -42,7 +43,7 @@ GhostProvisioner.prototype.provision = function(ghost) {
     match: "SSH"
   }).then(function(ip) {
     logger.info('SSH connection now possible');
-    return self.runRemoteScript({
+    return self.runRemoteScript(self.script, {
       host: ghost.ipAddress,
       port: 22,
       username: 'root',
