@@ -4,7 +4,6 @@ var config = require('../etc/config');
 var monq = require('monq');
 var client = monq(config.mongoURI);
 var VPS = require('./vps');
-
 var Ghosts = require('./ghosts');
 
 function GhostActivator(ghost) {
@@ -24,35 +23,36 @@ GhostActivator.prototype.requestActivation = function(done) {
   }, done);
 }
 
-var worker = client.worker(['vps']);
-
-worker.register({
-  create: function (params, callback) {
-    var vps = new VPS(params.ghost);
-    try {
-      logger.info('vps::creator start');
-      vps.create().then(function() {
-        logger.info("Created VPS");
-        callback(null);
-      }, function(err) {
-        logger.error(err.stack);
-        callback(err);
-      });
-    } catch (e) {
-      callback(e);
+GhostActivator.work = function() {
+  logger.info('init GhostActivator')
+  var worker = client.worker(['vps']);
+  worker.register({
+    create: function (params, callback) {
+      var vps = new VPS(params.ghost);
+      try {
+        logger.info('vps::creator start');
+        vps.create().then(function() {
+          logger.info("Created VPS");
+          callback(null);
+        }, function(err) {
+          logger.error(err.stack);
+          callback(err);
+        });
+      } catch (e) {
+        callback(e);
+      }
     }
-  }
-});
+  });
 
-worker.on('dequeued', function (data) { });
-worker.on('failed', function (data) {
-  logger.error('job failed', data.error);
-});
-worker.on('complete', function (data) {
-  logger.info('job complete');
-});
-worker.on('error', function (err) {
-  logger.error(err.stack);
-});
-
-worker.start();
+  worker.on('dequeued', function (data) { });
+  worker.on('failed', function (data) {
+    logger.error('job failed', data.error);
+  });
+  worker.on('complete', function (data) {
+    logger.info('job complete');
+  });
+  worker.on('error', function (err) {
+    logger.error(err.stack);
+  });
+  worker.start();
+}
