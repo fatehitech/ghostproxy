@@ -23,8 +23,9 @@ var handler = function (req, res, cb) {
       });
     } else {
       logger.warn('No path defined for host '+fqdn+'. Returning 404');
-      return RESPONSES.notFound(res);
+      RESPONSES.notFound(res);
     }
+    Ghosts.set(ghost, { lastAccessed: new Date() });
   })
 }
 
