@@ -66,7 +66,7 @@ GhostRequestHandler.prototype.queueRequestForReplay = function(req, cb) {
       header: req.headers,
       body: buffer.toString()
     };
-    queue.enqueue('create', { data: payload }, function (err, job) {
+    queue.enqueue('replay', { data: payload }, function (err, job) {
       if (err) {
         logger.error(err);
         return cb(err);
