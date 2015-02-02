@@ -30,6 +30,7 @@
     "nautical": "^0.1.0",
     "ssh-fingerprint": "0.0.1",
     "ssh2": "^0.4.1",
+    "stream-to-buffer": "^0.1.0",
     "uri-js": "~1.4.2",
     "winston": "^0.8.3"
   },
