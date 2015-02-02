@@ -4,6 +4,7 @@ var logger = require('./src/logger')
   , fs = require('fs')
   , prod = process.env.NODE_ENV === 'production'
   , GhostActivator = require('./src/ghost_activator')
+  , RequestProcessor = require('./src/request_processor');
 
 var ports = {
   proxy: {
@@ -30,3 +31,4 @@ if (process.env.SSL_KEY_PATH && process.env.SSL_CERT_PATH) {
 }
 
 GhostActivator.work();
+RequestProcessor.work();
