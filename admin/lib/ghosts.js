@@ -1,5 +1,15 @@
 Ghosts = new Mongo.Collection("ghosts");
 
+Ghosts.STATUS_TEXT = {
+  0: 'off',
+  1: 'waiting',
+  2: 'ready'
+}
+
+Ghosts.OFF = 0;
+Ghosts.WAITING = 1;
+Ghosts.READY = 2;
+
 Ghosts.attachSchema({
   fqdn: {
     type: String,
