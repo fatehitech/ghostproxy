@@ -3,6 +3,9 @@ var MongoClient = require('mongodb').MongoClient;
 var Promise = require('bluebird');
 
 var Ghosts = {
+  OFF: 0,
+  WAITING: 1,
+  READY: 2,
   find: function(query) {
     return new Promise(function(resolve, reject) {
       MongoClient.connect(mongoURI, function(err, db) {
