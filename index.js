@@ -3,6 +3,7 @@ var logger = require('./src/logger')
   , app = require('./src/app')
   , fs = require('fs')
   , prod = process.env.NODE_ENV === 'production'
+  , GhostReaper = require('./src/ghost_reaper')
   , GhostActivator = require('./src/ghost_activator')
   , RequestProcessor = require('./src/request_processor');
 
@@ -30,5 +31,6 @@ if (process.env.SSL_KEY_PATH && process.env.SSL_CERT_PATH) {
   logger.warn('no ssl -- set SSL_KEY_PATH and SSL_CERT_PATH!')
 }
 
+GhostReaper.work();
 GhostActivator.work();
 RequestProcessor.work();

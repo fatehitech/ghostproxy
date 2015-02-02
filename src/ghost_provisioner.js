@@ -1,6 +1,7 @@
 module.exports = GhostProvisioner;
 var Client = require('ssh2').Client;
 var Ghosts = require('./ghosts');
+var GhostReaper = require('./ghost_reaper');
 var Promise = require('bluebird');
 var logger = require('./logger');
 var config = require('../etc/config');
@@ -61,5 +62,7 @@ GhostProvisioner.prototype.provision = function(ghost) {
     })
   }).then(function() {
     return Ghosts.set(ghost, { status: Ghosts.READY, isProvisioned: true });
+  }).then(function() {
+    GhostReaper.enqueue({ ghostId: ghost._id });
   });
 }
