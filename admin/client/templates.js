@@ -34,8 +34,8 @@ Template.insertGhostForm.helpers({
 })
 
 Template.ghost.helpers({
-  'prettyJSON': function() {
-    return JSON.stringify(this, null, 2);
+  'statusText': function() {
+    return Ghosts.STATUS_TEXT[this.status];
   },
   'hasJobs': function() {
     return this.getJobs().count() > 0;

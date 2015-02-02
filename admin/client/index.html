@@ -18,8 +18,9 @@
 
 <template name="ghost">
   <li class="ghost">
-    <h3>{{name}}</h3>
-    <pre>{{prettyJSON}}</pre>
+    FQDN: {{fqdn}}<br>
+    Target: {{ipAddress}}:{{httpPort}}<br>
+    Status: {{statusText}}<br>
     <button class="destroy">Remove</button>
     <button class="resetStatus">Reset Status</button>
     {{#if hasJobs}}
