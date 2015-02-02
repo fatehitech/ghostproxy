@@ -8,6 +8,9 @@ Template.ghostIndex.events({
   'click .destroy': function() {
     if (confirm("Are you sure?"))
       Ghosts.remove({_id: this._id});
+  },
+  'click .resetStatus': function() {
+    Ghosts.update({_id: this._id}, {$set: {status: 0}});
   }
 });
 
