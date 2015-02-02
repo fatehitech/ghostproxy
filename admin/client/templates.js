@@ -6,8 +6,11 @@ Template.ghostIndex.helpers({
 
 Template.ghostIndex.events({
   'click .destroy': function() {
-    if (confirm("Are you sure?"))
-      Ghosts.remove({_id: this._id});
+    this.destroyJobs();
+    Ghosts.remove({_id: this._id});
+  },
+  'click .destroyJobs': function() {
+    this.destroyJobs();
   },
   'click .resetStatus': function() {
     Ghosts.update({_id: this._id}, {$set: {status: 0}});
@@ -24,8 +27,20 @@ Template.insertGhostForm.rendered = function() {
   });
 }
 
+Template.insertGhostForm.helpers({
+  'omitFields': function() {
+    return ['ipAddress', 'droplet', 'snapshotId', 'status'];
+  }
+})
+
 Template.ghost.helpers({
   'prettyJSON': function() {
     return JSON.stringify(this, null, 2);
+  },
+  'hasJobs': function() {
+    return this.getJobs().count() > 0;
+  },
+  'jobs': function() {
+    return this.getJobs();
   }
 });

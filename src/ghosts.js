@@ -1,4 +1,5 @@
-var mongoURI = 'mongodb://127.0.0.1:3001/meteor';
+var config = require('../etc/config');
+var mongoURI = config.mongoURI;
 var MongoClient = require('mongodb').MongoClient;
 var Promise = require('bluebird');
 
@@ -30,19 +31,32 @@ var Ghosts = {
       return results[0];
     })
   },
-  updateStatus: function(ghost, status) {
+  // set attributes and return the new document
+  set: function(ghost, data) {
+    var self = this;
     return new Promise(function(resolve, reject) {
       getCollection(function(err, collection, db) {
         if (err) return reject(err);
-        collection.update({_id: ghost._id}, {
-          $set: {status: status}
-        }, {w:1}, function(err) {
+        var query = {_id: ghost._id};
+        collection.update(query, { $set: data }, {w:1}, function(err) {
           if (err) return reject(err);
-          resolve();
-          db.close();
+          collection.find(query).toArray(function(err, results) {
+            if(err) return reject(err);
+            resolve(results[0]);
+            db.close();
+          });
         });
       });
     });
+  },
+  updateStatus: function(ghost, status) {
+    return this.set(ghost, { status: status });
+  },
+  updateDroplet: function(ghost, droplet) {
+    return this.set(ghost, { droplet: droplet });
+  },
+  updateIpAddress: function(ghost, addr) {
+    return this.set(ghost, { ipAddress: addr });
   }
 }
 

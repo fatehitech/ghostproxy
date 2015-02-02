@@ -18,12 +18,28 @@
 
 <template name="ghost">
   <li class="ghost">
+    <h3>{{name}}</h3>
     <pre>{{prettyJSON}}</pre>
     <button class="destroy">Remove</button>
     <button class="resetStatus">Reset Status</button>
+    {{#if hasJobs}}
+      <button class="destroyJobs">Remove Jobs</button>
+      <h4>Jobs</h4>
+      <ul>
+        {{#each jobs}}
+          {{> job}}
+        {{/each}}
+      </ul>
+    {{/if}}
+  </li>
+</template>
+
+<template name="job">
+  <li>
+    {{status}} - {{queue}}::{{ name }}
   </li>
 </template>
 
 <template name="insertGhostForm">
-  {{> quickForm collection="Ghosts" id="insertGhostForm" type="insert"}}
+  {{> quickForm collection="Ghosts" id="insertGhostForm" type="insert" omitFields=omitFields}}
 </template>

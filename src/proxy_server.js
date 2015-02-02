@@ -18,7 +18,8 @@ var handler = function (req, res, cb) {
     if (ghost) {
       var handler = new GhostRequestHandler(ghost);
       handler.handleRequest(req, res, function() {
-        cb(null, { path: URI.parse(ghost.proxyPath) }, fqdn);
+        var proxyPath = 'http://'+ghost.ipAddress+':'+ghost.httpPort;
+        cb(null, { path: URI.parse(proxyPath) }, fqdn);
       });
     } else {
       logger.warn('No path defined for host '+fqdn+'. Returning 404');
