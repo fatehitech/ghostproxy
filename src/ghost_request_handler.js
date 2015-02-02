@@ -1,3 +1,8 @@
+var streamToBuffer = require('stream-to-buffer');
+var config = require('../etc/config');
+var logger = require('./logger');
+var monq = require('monq');
+var client = monq(config.mongoURI);
 var RESPONSES = require('./responses');
 var Ghosts = require('./ghosts');
 var GhostActivator = require('./ghost_activator');
@@ -32,9 +37,10 @@ GhostRequestHandler.prototype.handleNonGetRequest = function(req, res, proxy) {
   if (this.ghost.status >= Ghosts.READY) {
     return proxy();
   } else {
+    var self = this;
     return this.activateGhost(function(err) {
       if (err) return RESPONSES.gatewayError(res);
-      return this.queueRequestForReplay(req, function(err) {
+      return self.queueRequestForReplay(req, function(err) {
         if (err) return RESPONSES.gatewayError(res);
         else return RESPONSES.ok(res);
       });
@@ -52,6 +58,22 @@ GhostRequestHandler.prototype.activateGhost = function(done) {
   }
 }
 
-GhostRequestHandler.prototype.queueRequestForReplay = function(req) {
-  console.log('queue for replay nonget');
+GhostRequestHandler.prototype.queueRequestForReplay = function(req, cb) {
+  var queue = client.queue('payloads');
+  streamToBuffer(req, function (err, buffer) {
+    if (err) throw err;
+    var payload = {
+      header: req.headers,
+      body: buffer.toString()
+    };
+    queue.enqueue('create', { data: payload }, function (err, job) {
+      if (err) {
+        logger.error(err);
+        return cb(err);
+      } else {
+        logger.info('enqueued payload::create');
+        return cb();
+      }
+    });
+  });
 }
