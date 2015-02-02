@@ -11,14 +11,18 @@ Ghosts.attachSchema({
   proxyPath: {
     type: String,
     optional: true,
-    label: 'Proxy Path (http://1.2.3.4:3000)',
-    min: 1,
-    max: 160
+    label: 'Proxy Path (http://1.2.3.4:3000)'
   },
   digitalOceanApiKey: {
     label: "DigitalOcean API Key",
     type: String,
     min: 64, max: 64
+  },
+  status: {
+    type: Number,
+    autoValue: function() {
+      return 0;
+    }
   }
 });
 
