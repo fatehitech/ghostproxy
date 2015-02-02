@@ -37,7 +37,7 @@ module.exports = function(client) {
       var addr = _.find(droplet.networks.v4, { type: 'public' }).ip_address
       return Ghosts.updateIpAddress(ghost, addr);
     }).then(function(ghost) {
-      done(null, ghost);
+      done(null, ghost.ipAddress);
     }).catch(done).error(done)
   }
 }

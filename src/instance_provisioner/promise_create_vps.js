@@ -17,9 +17,9 @@ module.exports = function(options) {
       } else {
         fs.readFile(pubKeyPath, function(err, pubKey) {
           if (err) return reject(err);
-          api.createServer(ghost, pubKey.toString(), options, function(err, ghost) {
+          api.createServer(ghost, pubKey.toString(), options, function(err, ipAddress) {
             if (err) return reject(err);
-            resolve(ghost.ipAddress)
+            resolve(ipAddress);
           })
         })
       }
