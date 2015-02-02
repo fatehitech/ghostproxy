@@ -1,5 +1,6 @@
 var RESPONSES = require('./responses');
 var Ghosts = require('./ghosts');
+var GhostActivator = require('./ghost_activator');
 
 module.exports = GhostRequestHandler;
 function GhostRequestHandler(ghost) {
@@ -44,10 +45,10 @@ GhostRequestHandler.prototype.handleNonGetRequest = function(req, res, proxy) {
 GhostRequestHandler.prototype.activateGhost = function(done) {
   if (this.ghost.status >= Ghosts.WAITING) return done();
   else {
-    //this.ghost.update({ status: 'waiting' });
-    // send DO request
-    console.log('start DO');
-    done();
+    var activator = new GhostActivator(this.ghost);
+    activator.requestActivation(function(err) {
+      return done(err);
+    });
   }
 }
 
