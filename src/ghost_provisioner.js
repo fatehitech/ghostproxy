@@ -59,6 +59,6 @@ GhostProvisioner.prototype.provision = function(ghost) {
       ip: ghost.ipAddress
     })
   }).then(function() {
-    return Ghosts.updateStatus(ghost, Ghosts.READY);
+    return Ghosts.set(ghost, { status: Ghosts.READY, isProvisioned: true });
   });
 }

@@ -11,6 +11,9 @@ VPS.prototype.create = function() {
   if (this.ghost.snapshotId) {
     return this.createWithSnapshot(this.ghost.snapshotId);
   } else {
+    if (this.ghost.isProvisioned) return new Promise(function(resolve){
+      resolve();
+    });
     return this.createWithProvisioner({
       type: this.ghost.provisioner,
       script: this.ghost.provisionerScript
