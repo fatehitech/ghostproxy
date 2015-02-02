@@ -63,7 +63,7 @@ GhostRequestHandler.prototype.queueRequestForReplay = function(req, cb) {
   streamToBuffer(req, function (err, buffer) {
     if (err) throw err;
     var payload = {
-      header: req.headers,
+      headers: req.headers,
       body: buffer.toString()
     };
     queue.enqueue('replay', { data: payload }, function (err, job) {
@@ -71,7 +71,7 @@ GhostRequestHandler.prototype.queueRequestForReplay = function(req, cb) {
         logger.error(err);
         return cb(err);
       } else {
-        logger.info('enqueued payload::create');
+        logger.info('enqueued payload::replay');
         return cb();
       }
     });
