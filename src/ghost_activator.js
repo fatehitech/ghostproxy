@@ -33,7 +33,10 @@ GhostActivator.work = function() {
         logger.info('vps::creator start');
         vps.create().then(function() {
           logger.info("Created VPS");
-          callback(null);
+          return vps.start().then(function() {
+            logger.info("Started VPS");
+            callback(null);
+          });
         }, function(err) {
           logger.error(err.stack);
           callback(err);

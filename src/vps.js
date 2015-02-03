@@ -9,10 +9,11 @@ function VPS(ghost) {
 };
 
 VPS.prototype.create = function() {
+  var create = null;
   if (this.ghost.snapshotId) {
-    return this.createFromSnapshot(this.ghost.snapshotId);
+    create = this.createFromSnapshot(this.ghost.snapshotId);
   } else {
-    return this.createFromScratch({
+    create = this.createFromScratch({
       type: this.ghost.provisioner,
       script: this.ghost.provisionerScript
     })
@@ -35,7 +36,7 @@ VPS.prototype.createDroplet = function() {
 
 VPS.prototype.createFromScratch = function(options) {
   return this.createDroplet().then(function() {
-
+    
   })
 }
 
@@ -43,8 +44,8 @@ VPS.prototype.createFromSnapshot = function(snapshotId) {
   return this.createDroplet()
 }
 
-VPS.prototype.becomeReady = function() {
-  logger.info("vps::becomeReady");
+VPS.prototype.start = function() {
+  logger.info("vps::start");
   return Ghosts.reload(this.ghost).then(function(ghost) {
     if (ghost.isProvisioned) {
       logger.info("Ghost is already provisioned, won't provision");
@@ -68,6 +69,7 @@ VPS.prototype.becomeReady = function() {
   }).then(function(ghost) {
     return Ghosts.set(ghost, { status: Ghosts.READY });
   }).then(function(ghost) {
+    logger.info("Started vps!")
     GhostReaper.enqueue({ ghostId: ghost._id });
   });
 }
