@@ -7,9 +7,44 @@ var logger = require('./logger');
 var config = require('../etc/config');
 var privKeyPath = config.ssh.privateKeyPath;
 var blockUntilListening = require('./instance_provisioner/block_until_listening');
-function GhostProvisioner(opts) {
+
+function GhostProvisioner(ghost, opts) {
+  this.ghost = ghost;
   this.type = opts.type;
   this.script = opts.script;
+}
+
+GhostProvisioner.prototype.provision = function() {
+  var done = this.setIsProvisioned.bind(this);
+  if (this.type === 'bash') {
+    return this.provisionWithBash().then(done);
+  } else {
+    logger.warn("Unsupported provisioner", this.type);
+  }
+}
+
+GhostProvisioner.prototype.setIsProvisioned = function() {
+  logger.info('setting Ghost.isProvisioned to true');
+  return Ghosts.set(this.ghost, { isProvisioned: true });
+}
+
+GhostProvisioner.prototype.provisionWithBash = function() {
+  var self = this;
+  logger.info('will provision with bash');
+  return blockUntilListening({
+    port: 22,
+    ip: this.ghost.ipAddress,
+    match: "SSH"
+  }).then(function(ip) {
+    logger.info('SSH connection now possible');
+    return self.runRemoteScript(self.script, {
+      host: self.ghost.ipAddress,
+      port: 22,
+      username: 'root',
+      hostVerifier: function() { return true },
+      privateKey: require('fs').readFileSync(privKeyPath)
+    });
+  })
 }
 
 GhostProvisioner.prototype.runRemoteScript = function(script, connectOpts) {
@@ -32,37 +67,5 @@ GhostProvisioner.prototype.runRemoteScript = function(script, connectOpts) {
         });
       });
     }).connect(connectOpts);
-  });
-}
-
-GhostProvisioner.prototype.provision = function(ghost) {
-  var self = this;
-  logger.info("provisioning ghost");
-  return blockUntilListening({
-    port: 22,
-    ip: ghost.ipAddress,
-    match: "SSH"
-  }).then(function(ip) {
-    logger.info('SSH connection now possible');
-    if (ghost.isProvisioned) return true;
-    return self.runRemoteScript(self.script, {
-      host: ghost.ipAddress,
-      port: 22,
-      username: 'root',
-      hostVerifier: function() {
-        return true;
-      },
-      privateKey: require('fs').readFileSync(privKeyPath)
-    });
-  }).then(function() {
-    return blockUntilListening({
-      http: true,
-      port: ghost.httpPort,
-      ip: ghost.ipAddress
-    })
-  }).then(function() {
-    return Ghosts.set(ghost, { status: Ghosts.READY, isProvisioned: true });
-  }).then(function() {
-    GhostReaper.enqueue({ ghostId: ghost._id });
   });
 }

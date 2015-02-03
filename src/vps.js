@@ -34,15 +34,40 @@ VPS.prototype.createDroplet = function() {
 }
 
 VPS.prototype.createFromScratch = function(options) {
-  var provisioner = new GhostProvisioner(options);
-  var ghost = this.ghost;
   return this.createDroplet().then(function() {
-    return Ghosts.reload(ghost).then(function(ghost) {
-      return provisioner.provision(ghost);
-    })
+
   })
 }
 
 VPS.prototype.createFromSnapshot = function(snapshotId) {
   return this.createDroplet()
+}
+
+VPS.prototype.becomeReady = function() {
+  logger.info("vps::becomeReady");
+  return Ghosts.reload(this.ghost).then(function(ghost) {
+    if (ghost.isProvisioned) {
+      logger.info("Ghost is already provisioned, won't provision");
+    } else if (ghost.snapshotId) {
+      logger.info("Ghost is from a snapshot, won't provision");
+    } else {
+      logger.info("Will provision ghost");
+      var provisioner = new GhostProvisioner(ghost, options);
+      return provisioner.provision();
+    }
+    return ghost;
+  }).then(function(ghost) {
+    return blockUntilListening({
+      http: true,
+      port: ghost.httpPort,
+      ip: ghost.ipAddress
+    }).then(function() {
+      logger.info("http service is now responsive");
+      return ghost;
+    })
+  }).then(function(ghost) {
+    return Ghosts.set(ghost, { status: Ghosts.READY });
+  }).then(function(ghost) {
+    GhostReaper.enqueue({ ghostId: ghost._id });
+  });
 }
