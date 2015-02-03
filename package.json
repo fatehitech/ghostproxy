@@ -5,10 +5,10 @@
   "main": "src/server/app.js",
   "scripts": {
     "start": "node index.js",
-    "test": "mocha --recursive test/unit",
-    "tdd": "watchy -w . -i '/\\.|\\.json|data|drops|coverage$' -- mocha -R min --recursive test/unit 2>&1 | simple-stacktrace",
-    "autocover": "watchy -w . -i '/\\.|node_modules|\\.json|data|coverage$' -- istanbul cover _mocha -- --recursive test/unit",
-    "cover": "istanbul cover _mocha -- --recursive test/unit"
+    "test": "mocha --recursive test",
+    "tdd": "watchy -w . -i '/\\.|\\.json|data|drops|coverage$' -- mocha -R min --recursive test 2>&1 | simple-stacktrace",
+    "autocover": "watchy -w . -i '/\\.|node_modules|\\.json|data|coverage$' -- istanbul cover _mocha -- --recursive test",
+    "cover": "istanbul cover _mocha -- --recursive test"
   },
   "bin": {
     "ghostproxy": "bin/ghostproxy"
@@ -39,6 +39,8 @@
   "devDependencies": {
     "chai": "^1.9.1",
     "mocha": "^1.21.4",
+    "nock": "^0.59.1",
+    "sinon": "^1.12.2",
     "supertest": "^0.13.0"
   }
 }
