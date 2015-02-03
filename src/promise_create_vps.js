@@ -1,6 +1,6 @@
 var Promise = require('bluebird')
-  , config = require('../../etc/config')
-  , cloudProviders = require('../cloud_providers')
+  , config = require('../etc/config')
+  , cloudProviders = require('./cloud_providers')
   , fs = require('fs')
   , path = require('path')
   , pubKeyPath = config.ssh.publicKeyPath
