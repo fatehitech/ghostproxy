@@ -31,6 +31,9 @@ var Ghosts = {
       return results[0];
     })
   },
+  reload: function(ghost) {
+    return this.findOne({ _id: ghost._id });
+  },
   // set attributes and return the new document
   set: function(ghost, data) {
     var self = this;

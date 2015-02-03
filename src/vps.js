@@ -1,3 +1,4 @@
+var logger = require('./logger');
 var Promise = require('bluebird');
 var GhostProvisioner = require('./ghost_provisioner');
 var Ghosts = require('./ghosts');
@@ -9,9 +10,9 @@ function VPS(ghost) {
 
 VPS.prototype.create = function() {
   if (this.ghost.snapshotId) {
-    return this.createWithSnapshot(this.ghost.snapshotId);
+    return this.createFromSnapshot(this.ghost.snapshotId);
   } else {
-    return this.createWithProvisioner({
+    return this.createFromScratch({
       type: this.ghost.provisioner,
       script: this.ghost.provisionerScript
     })
@@ -26,22 +27,22 @@ VPS.prototype.createDroplet = function() {
     onDelayed: {
       time: 10000,
       action: function(explanation) {
-        console.log(explanation);
+        logger.warn("VPS::createDroplet", explanation);
       }
     }
   })(this.ghost);
 }
 
-VPS.prototype.createWithProvisioner = function(options) {
+VPS.prototype.createFromScratch = function(options) {
   var provisioner = new GhostProvisioner(options);
   var ghost = this.ghost;
   return this.createDroplet().then(function() {
-    return Ghosts.findOne({ _id: ghost._id }).then(function(ghost) {
+    return Ghosts.reload(ghost).then(function(ghost) {
       return provisioner.provision(ghost);
     })
   })
 }
 
-VPS.prototype.createWithSnapshot = function(snapshotId) {
+VPS.prototype.createFromSnapshot = function(snapshotId) {
   return this.createDroplet()
 }
