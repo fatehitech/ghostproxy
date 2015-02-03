@@ -1,11 +1,10 @@
 var expect = require('chai').expect;
+//var nock = require('nock');
 var stub = require('sinon').stub;
 var VPS = require('../src/vps');
 
 var ghost = null;
 var vps = null;
-
-var nock = require('nock');
 
 /*
 var createDroplet = nock('https://api.digitalocean.com')
