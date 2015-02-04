@@ -14,6 +14,7 @@ var handler = function (req, res, cb) {
   }
   var fqdn = req.headers.host.split(':')[0];
 
+  // FIXME respect the ghost lock!!!
   Ghosts.findOne({ fqdn: fqdn }).then(function(ghost) {
     if (ghost) {
       var handler = new GhostRequestHandler(ghost);
