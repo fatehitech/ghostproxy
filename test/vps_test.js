@@ -1,9 +1,9 @@
 var expect = require('chai').expect;
 var Ghosts = require('../src/ghosts');
 var Promise = require('bluebird');
-var nock = require('nock');
 var stub = require('sinon').stub;
 var VPS = require('../src/vps');
+var netMock = require('./netmock');
 
 var ghost = null;
 var vps = null;
@@ -36,44 +36,6 @@ describe("VPS::create", function() {
   });
 });
 
-function mockNetwork() {
-  return {
-    getKeys: function() {
-      return nock('https://api.digitalocean.com')
-      .get('/v2/account/keys')
-      .reply(200, {});
-    }(),
-    addKey: function() {
-      return nock('https://api.digitalocean.com')
-      .post('/v2/account/keys')
-      .reply(201, {});
-    }(),
-    getSizes: function() {
-      return nock('https://api.digitalocean.com')
-      .get('/v2/sizes')
-      .reply(200, {
-        sizes: [{
-          memory: 512,
-          regions: ['sfo1']
-        }]
-      });
-    }(),
-    createDroplet: function() {
-      return nock('https://api.digitalocean.com')
-      .post('/v2/droplets')
-      .reply(202, {
-        droplet: { id: 2 }
-      });
-    }(),
-    getDroplet: function() {
-      return nock('https://api.digitalocean.com')
-      .get('/v2/droplets/2')
-      .reply(200, {
-        droplet: { networks: { v4: [ { ip_address: '1.2.3.4', type: 'public' } ] } }
-      });
-    }()
-  }
-}
 
 describe("VPS::createFromSnapshot", function() {
   it("sends the correct payload to digitalocean", function(done) {
@@ -85,9 +47,9 @@ var backoff = require('../src/backoff');
 backoff.defaults.initialDelay = 1;
 
 describe("VPS::createFromScratch", function() {
-  var netmocks = null;
+  var apiCalls = null;
   beforeEach(function() {
-    netmocks = mockNetwork();
+    apiCalls = netMock.DigitalOcean.Create();
     stub(Ghosts, 'updateDroplet', function(ghost, droplet) {
       return new Promise(function(resolve, reject) {
         ghost.droplet = droplet
@@ -109,11 +71,11 @@ describe("VPS::createFromScratch", function() {
     vps.createFromSnapshot().then(function() {
       expect(ghost.droplet).to.be.ok;
       expect(ghost.ipAddress).to.eq('1.2.3.4');
-      netmocks.getKeys.done();
-      netmocks.addKey.done();
-      netmocks.getSizes.done();
-      netmocks.createDroplet.done();
-      netmocks.getDroplet.done();
+      apiCalls.getKeys.done();
+      apiCalls.addKey.done();
+      apiCalls.getSizes.done();
+      apiCalls.createDroplet.done();
+      apiCalls.getDroplet.done();
       done();
     }, done);
   });
