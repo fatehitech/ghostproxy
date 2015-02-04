@@ -6,7 +6,7 @@ var Promise = require('bluebird');
 var logger = require('./logger');
 var config = require('../etc/config');
 var privKeyPath = config.ssh.privateKeyPath;
-var blockUntilListening = require('./instance_provisioner/block_until_listening');
+var blockUntilListening = require('./block_until_listening');
 
 function GhostProvisioner(ghost, opts) {
   this.ghost = ghost;

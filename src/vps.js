@@ -3,6 +3,7 @@ var Promise = require('bluebird');
 var GhostProvisioner = require('./ghost_provisioner');
 var Ghosts = require('./ghosts');
 var promiseCreateVPS = require('./promise_create_vps');
+var blockUntilListening = require('./block_until_listening');
 module.exports = VPS;
 function VPS(ghost) {
   this.ghost = ghost;
