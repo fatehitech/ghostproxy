@@ -59,21 +59,11 @@ GhostRequestHandler.prototype.activateGhost = function(done) {
 }
 
 GhostRequestHandler.prototype.queueRequestForReplay = function(req, cb) {
-  var queue = client.queue('payloads');
   streamToBuffer(req, function (err, buffer) {
-    if (err) throw err;
-    var payload = {
+    if (err) return cb(err);
+    Ghosts.enqueueJob(this.ghost, 'httpRequest', 'replay', {
       headers: req.headers,
       body: buffer.toString()
-    };
-    queue.enqueue('replay', { data: payload }, function (err, job) {
-      if (err) {
-        logger.error('replay error', err);
-        return cb(err);
-      } else {
-        logger.info('enqueued payload::replay');
-        return cb();
-      }
-    });
-  });
+    }, cb);
+  }.bind(this));
 }

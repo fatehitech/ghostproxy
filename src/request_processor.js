@@ -11,35 +11,19 @@ function RequestProcessor() {
 
 RequestProcessor.work = function() {
   logger.info('init RequestProcessor');
-  var worker = client.worker(['payloads']);
-  worker.register({
-    replay: function(params, callback) {
-      var interval = setInterval(function() {
-        Ghosts.findOne({ fqdn: params.data.headers.host }).then(function(ghost) {
-          if(ghost.status >= Ghosts.READY) {
-            logger.info('replaying request');
-            needle.post('http://'+ghost.ipAddress, params.data.body, { 
-              headers: params.data.headers
-            }, function(err, res) {
-              if(err) {
-                logger.error('request processor error', err);
-                callback(err)
-              } else {
-                logger.info('successful replay');
-                clearInterval(interval);
-                return callback();
-              }
-            });
-          }
+  Ghosts.createWorker('httpRequest', 'replay', function(ghost, params, callback) {
+    var interval = setInterval(function() {
+      if(ghost.status >= Ghosts.READY) {
+        logger.info('replaying request');
+        needle.post('http://'+ghost.ipAddress, params.data.body, { 
+          headers: params.data.headers
+        }, function(err, res) {
+          if(err) logger.error('request processor error', err.stack);
+          else logger.info('successful replay')
+          clearInterval(interval);
+          return callback(err)
         });
-      }, 5000);
-    }
-  });
-  worker.start();
+      }
+    }, 5000);
+  }).start();
 }
-
-
-
-
-
-

@@ -65,12 +65,13 @@ var Ghosts = {
   updateIpAddress: function(ghost, addr) {
     return this.set(ghost, { ipAddress: addr });
   },
-  enqueueJob: function(ghost, queueName, actionName, data) {
+  enqueueJob: function(ghost, queueName, actionName, data, cb) {
     var queue = monqClient.queue(queueName);
     var params = { ghostId: ghost._id, data: data }
     queue.enqueue(actionName, params, function (err, job) {
       if (err) return logger.error('enqueue failure: '+err.stack);
-      logger.info('enqueued '+queueName+'::'+actionName);
+      else logger.info('enqueued '+queueName+'::'+actionName);
+      if (cb) cb(err);
     });
   },
   createWorker: function(queueName, actionName, actionFunction) {
