@@ -24,14 +24,7 @@ VPS.prototype.createDroplet = function() {
   this.ghost.memorySize = 512;
   this.ghost.region = 'sfo1';
   this.ghost.digitalOceanImage = 'ubuntu-14-04-x64';
-  return promiseCreateVPS({
-    onDelayed: {
-      time: 10000,
-      action: function(explanation) {
-        logger.warn("VPS::createDroplet", explanation);
-      }
-    }
-  })(this.ghost);
+  return promiseCreateVPS()(this.ghost);
 }
 
 VPS.prototype.createFromScratch = function(options) {
