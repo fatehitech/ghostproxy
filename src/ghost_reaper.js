@@ -6,24 +6,29 @@ var monq = require('monq');
 var needle = require('needle');
 var client = monq(config.mongoURI);
 var Ghosts = require('./ghosts');
+var VPS = require('./vps');
 
-function GhostReaper() {}
+function GhostReaper(ghost) {
+  this.ghost = ghost;
+}
 
-GhostReaper.reap = function(ghost) {
-  logger.info('in GhostReaper.reap() ', ghost.fqdn);
+GhostReaper.prototype.reap = function() {
+  var vps = new VPS(this.ghost);
+  //vps.lock().
+  //  then(vps.shutdown).
+  //  then(vps.snapshot).
+  //  then(vps.unlock)
 }
 
 GhostReaper.work = function() {
   logger.info('init GhostReaper');
-  Ghosts.createWorker('reaper', 'reap', function(ghost, params, callback) {
-    logger.info('running reaper');
-    var lastAccessed = moment(ghost.lastAccessed);
-    var minutesUp = moment().diff(lastAccessed, 'minutes');
-    logger.info('ghost was up for '+minutesUp+' minutes');
-    if (minutesUp > 1) {
-      GhostReaper.reap(ghost);
-    } else {
-      Ghosts.enqueueJob(ghost, 'reaper', 'reap');
-    }
-  }).start();
+  setInterval(function() {
+    var age = moment().subtract(1, 'minute');
+    Ghosts.find({
+      status: Ghosts.READY,
+      lastAccessed: { $lte: age._d }
+    }).map(function(ghost) {
+      new GhostReaper(ghost).reap();
+    });
+  }, 2000);
 }

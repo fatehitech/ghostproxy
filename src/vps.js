@@ -61,8 +61,25 @@ VPS.prototype.start = function() {
     })
   }).then(function(ghost) {
     return Ghosts.set(ghost, { status: Ghosts.READY });
-  }).then(function(ghost) {
-    logger.info("Started vps!")
-    Ghosts.enqueueJob(ghost, 'reaper', 'reap');
   });
+}
+
+VPS.prototype.lock = function() {
+  return Ghosts.set(this.ghost, { locked: true });
+}
+
+VPS.prototype.shutdown = function() {
+  var ghost = this.ghost;
+  return new Promise(function(resolve, reject) {
+    return Ghosts.set(ghost, { status: '' });
+  });
+}
+
+VPS.prototype.snapshot = function() {
+  var ghost = this.ghost;
+  DO.snapshot.then(function() {
+    return Ghosts.set(ghost, { 
+      snapshotId: snapshot._id
+    });
+  })
 }
