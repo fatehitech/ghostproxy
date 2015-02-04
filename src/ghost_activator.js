@@ -19,10 +19,7 @@ GhostActivator.prototype.requestActivation = function(done) {
 GhostActivator.work = function() {
   logger.info('init GhostActivator');
   Ghosts.createWorker('vps', 'create', function (ghost, params, callback) {
-    console.log('Vps create', ghost);
     var vps = new VPS(ghost);
-    console.log(vps);
-    return;
     try {
       vps.create().then(function() {
         logger.info("Created VPS");
