@@ -14,7 +14,7 @@ GhostReaper.enqueue = function(data) {
   var queue = client.queue('reaper');
   queue.enqueue('reap', data, function (err, job) {
     if (err) {
-      logger.error(err);
+      logger.error('reaper queue error', err);
     } else {
       logger.info('enqueued reaper::reap');
     }
@@ -42,7 +42,7 @@ GhostReaper.work = function() {
           GhostReaper.enqueue(params);
         }
       }, function(err) {
-        logger.error(err);
+        logger.error('ghost find error', err);
       });
     }
   });

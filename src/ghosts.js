@@ -38,6 +38,7 @@ var Ghosts = {
   set: function(ghost, data) {
     var self = this;
     return new Promise(function(resolve, reject) {
+      if (!ghost) return reject(new Error("Ghost is undefined"));
       getCollection(function(err, collection, db) {
         if (err) return reject(err);
         var query = {_id: ghost._id};

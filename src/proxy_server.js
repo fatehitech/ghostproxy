@@ -37,7 +37,7 @@ var requestListener = function(req, res) {
   handler(req, res, function(err, opts, fqdn) {
     if (err) return RESPONSES.gatewayError(res);
     proxy.web(req, res, opts);
-    logger.info('Proxied HTTP '+fqdn+' => '+opts.target.scheme+'://'+opts.target.host+':'+opts.target.port);
+    logger.info('Proxied '+req.method+' '+fqdn+' => '+opts.target.scheme+'://'+opts.target.host+':'+opts.target.port);
   })
 }
 

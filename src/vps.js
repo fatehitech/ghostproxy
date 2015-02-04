@@ -1,6 +1,7 @@
 var logger = require('./logger');
 var Promise = require('bluebird');
 var GhostProvisioner = require('./ghost_provisioner');
+var GhostReaper = require('./ghost_reaper');
 var Ghosts = require('./ghosts');
 var promiseCreateVPS = require('./promise_create_vps');
 var blockUntilListening = require('./block_until_listening');
@@ -12,12 +13,9 @@ function VPS(ghost) {
 VPS.prototype.create = function() {
   var create = null;
   if (this.ghost.snapshotId) {
-    create = this.createFromSnapshot(this.ghost.snapshotId);
+    return this.createFromSnapshot(this.ghost.snapshotId);
   } else {
-    create = this.createFromScratch({
-      type: this.ghost.provisioner,
-      script: this.ghost.provisionerScript
-    })
+    return this.createFromScratch();
   }
 }
 
@@ -29,9 +27,7 @@ VPS.prototype.createDroplet = function() {
 }
 
 VPS.prototype.createFromScratch = function(options) {
-  return this.createDroplet().then(function() {
-    
-  })
+  return this.createDroplet()
 }
 
 VPS.prototype.createFromSnapshot = function(snapshotId) {
@@ -47,7 +43,10 @@ VPS.prototype.start = function() {
       logger.info("Ghost is from a snapshot, won't provision");
     } else {
       logger.info("Will provision ghost");
-      var provisioner = new GhostProvisioner(ghost, options);
+      var provisioner = new GhostProvisioner(ghost, {
+        type: ghost.provisioner,
+        script: ghost.provisionerScript
+      });
       return provisioner.provision();
     }
     return ghost;

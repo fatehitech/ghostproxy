@@ -49,7 +49,7 @@ GhostActivator.work = function() {
 
   worker.on('dequeued', function (data) { });
   worker.on('failed', function (data) {
-    logger.error('job failed', data.error);
+    logger.error(data.stack);
   });
   worker.on('complete', function (data) {
     logger.info('job complete');

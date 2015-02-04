@@ -21,7 +21,10 @@ RequestProcessor.work = function() {
             needle.post('http://'+ghost.ipAddress, params.data.body, { 
               headers: params.data.headers
             }, function(err, res) {
-              if(err) { logger.error(err); callback(err) } else {
+              if(err) {
+                logger.error('request processor error', err);
+                callback(err)
+              } else {
                 logger.info('successful replay');
                 clearInterval(interval);
                 return callback();

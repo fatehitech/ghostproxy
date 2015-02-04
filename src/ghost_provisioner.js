@@ -1,7 +1,6 @@
 module.exports = GhostProvisioner;
 var Client = require('ssh2').Client;
 var Ghosts = require('./ghosts');
-var GhostReaper = require('./ghost_reaper');
 var Promise = require('bluebird');
 var logger = require('./logger');
 var config = require('../etc/config');
