@@ -1,14 +1,13 @@
 var logger = require('./logger');
 var Promise = require('bluebird');
 var GhostProvisioner = require('./ghost_provisioner');
-var GhostReaper = require('./ghost_reaper');
 var Ghosts = require('./ghosts');
 var promiseCreateVPS = require('./promise_create_vps');
 var blockUntilListening = require('./block_until_listening');
 module.exports = VPS;
 function VPS(ghost) {
   this.ghost = ghost;
-};
+}
 
 VPS.prototype.create = function() {
   var create = null;

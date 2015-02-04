@@ -13,11 +13,15 @@ function GhostReaper(ghost) {
 }
 
 GhostReaper.prototype.reap = function() {
+  console.log('reap');
   var vps = new VPS(this.ghost);
-  //vps.lock().
-  //  then(vps.shutdown).
-  //  then(vps.snapshot).
-  //  then(vps.unlock)
+  return vps.lock().then(function() {
+    return vps.shutdown();
+  }).then(function() {
+    return vps.snapshot();
+  }).then(function() {
+    return vps.unlock();
+  });
 }
 
 GhostReaper.work = function() {
