@@ -4,6 +4,8 @@ var Promise = require('bluebird');
 var stub = require('sinon').stub;
 var VPS = require('../src/vps');
 var netMock = require('./netmock');
+var backoff = require('../src/backoff');
+backoff.defaults.initialDelay = 1;
 
 var ghost = null;
 var vps = null;
@@ -42,9 +44,6 @@ describe("VPS::createFromSnapshot", function() {
     done();
   });
 });
-
-var backoff = require('../src/backoff');
-backoff.defaults.initialDelay = 1;
 
 describe("VPS::createFromScratch", function() {
   var apiCalls = null;
