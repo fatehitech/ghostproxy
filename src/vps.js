@@ -63,6 +63,6 @@ VPS.prototype.start = function() {
     return Ghosts.set(ghost, { status: Ghosts.READY });
   }).then(function(ghost) {
     logger.info("Started vps!")
-    GhostReaper.enqueue({ ghostId: ghost._id });
+    Ghosts.enqueueJob(ghost, 'reaper', 'reap');
   });
 }
