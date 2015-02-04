@@ -67,7 +67,7 @@ Ghosts.attachSchema({
 
 Ghosts.helpers({
   'getJobs': function() {
-    return Jobs.find({ 'params.ghost._id': this._id })
+    return Jobs.find({ 'params.ghostId': this._id })
   },
   'destroyJobs': function() {
     this.getJobs().map(function(job) {
