@@ -64,10 +64,12 @@ VPS.prototype.start = function() {
 }
 
 VPS.prototype.lock = function() {
+  console.log('lock');
   return Ghosts.set(this.ghost, { locked: true });
 }
 
 VPS.prototype.shutdown = function() {
+  console.log('shutdown');
   var ghost = this.ghost;
   return new Promise(function(resolve, reject) {
     return Ghosts.set(ghost, { status: '' });
@@ -75,10 +77,16 @@ VPS.prototype.shutdown = function() {
 }
 
 VPS.prototype.snapshot = function() {
+  console.log('snapshot');
   var ghost = this.ghost;
   DO.snapshot.then(function() {
     return Ghosts.set(ghost, { 
       snapshotId: snapshot._id
     });
   })
+}
+
+VPS.prototype.unlock = function() {
+  console.log('unlock');
+  return Ghosts.set(this.ghost, { locked: false });
 }
