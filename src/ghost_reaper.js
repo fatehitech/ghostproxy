@@ -1,10 +1,6 @@
 module.exports = GhostReaper;
 var logger = require('./logger');
 var moment = require('moment');
-var config = require('../etc/config');
-var monq = require('monq');
-var needle = require('needle');
-var client = monq(config.mongoURI);
 var Ghosts = require('./ghosts');
 var VPS = require('./vps');
 
@@ -13,18 +9,16 @@ function GhostReaper(ghost) {
 }
 
 GhostReaper.prototype.reap = function() {
-  console.log('reap');
   var vps = new VPS(this.ghost);
-  return vps.lock().then(function() {
-    return vps.shutdown();
+  return Ghosts.updateStatus(this.ghost, Ghosts.WAITING).then(function() {
+    return vps.snapshotAndDestroy();
   }).then(function() {
-    return vps.snapshot();
-  }).then(function() {
-    return vps.unlock();
+    return Ghosts.updateStatus(this.ghost, Ghosts.OFF);
   });
 }
 
 GhostReaper.work = function() {
+  return;
   logger.info('init GhostReaper');
   setInterval(function() {
     var age = moment().subtract(1, 'minute');

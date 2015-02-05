@@ -2,7 +2,8 @@ var logger = require('./logger');
 var Promise = require('bluebird');
 var GhostProvisioner = require('./ghost_provisioner');
 var Ghosts = require('./ghosts');
-var promiseCreateVPS = require('./promise_create_vps');
+var createHost = require('./create_host')
+var snapshotAndDestroyHost = require('./snapshot_and_destroy_host');
 var blockUntilListening = require('./block_until_listening');
 module.exports = VPS;
 function VPS(ghost) {
@@ -22,7 +23,7 @@ VPS.prototype.createDroplet = function() {
   this.ghost.memorySize = 512;
   this.ghost.region = 'sfo1';
   this.ghost.digitalOceanImage = 'ubuntu-14-04-x64';
-  return promiseCreateVPS()(this.ghost);
+  return createHost()(this.ghost);
 }
 
 VPS.prototype.createFromScratch = function(options) {
@@ -63,30 +64,12 @@ VPS.prototype.start = function() {
   });
 }
 
-VPS.prototype.lock = function() {
-  console.log('lock');
-  return Ghosts.set(this.ghost, { locked: true });
-}
-
-VPS.prototype.shutdown = function() {
-  console.log('shutdown');
+VPS.prototype.snapshotAndDestroy = function() {
   var ghost = this.ghost;
-  return new Promise(function(resolve, reject) {
-    return Ghosts.set(ghost, { status: '' });
-  });
-}
-
-VPS.prototype.snapshot = function() {
-  console.log('snapshot');
-  var ghost = this.ghost;
-  DO.snapshot.then(function() {
+  return snapshotAndDestroyHost()(ghost).then(function(snapshot) {
+    logger.warn(snapshot);
     return Ghosts.set(ghost, { 
       snapshotId: snapshot._id
     });
   })
-}
-
-VPS.prototype.unlock = function() {
-  console.log('unlock');
-  return Ghosts.set(this.ghost, { locked: false });
 }

@@ -11,7 +11,8 @@ module.exports = function(config) {
     addKey: promiseAddKey,
     createDroplet: promiseCreateDroplet,
     removeDroplet: promiseRemoveDroplet,
-    fetchDroplet: promiseFetchDroplet
+    fetchDroplet: promiseFetchDroplet,
+    dropletActions: client.dropletActions
   }
 }
 
