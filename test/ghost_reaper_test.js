@@ -2,16 +2,22 @@ var expect = require('chai').expect;
 var GhostReaper = require('../src/ghost_reaper');
 
 var ghost = null;
+var reaper = null;
 
 beforeEach(function() {
   ghost = {};
+  reaper = new GhostReaper(ghost);
 });
 
 describe("GhostReaper::reap", function() {
+  beforeEach(function() {
+    reaper.reap();
+  });
+  it("locks the machine", function() {
+    
+  });
   it("turns off the machine", function() {
 
-    GhostReaper.reap(ghost)
-    
   });
   it("snapshots the machine on digitalocean", function() {
     
@@ -20,6 +26,9 @@ describe("GhostReaper::reap", function() {
     
   });
   it("replaces the previous snapshot id", function() {
+    
+  });
+  it("unlocks the machine", function() {
     
   });
 })
