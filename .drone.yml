@@ -1,4 +1,5 @@
 image: dockerfile/nodejs
 script:
   - npm install
+  - ssh-keygen -N "" -f etc/id_rsa
   - npm test
