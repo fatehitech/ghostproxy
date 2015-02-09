@@ -1,1 +1,4 @@
 image: dockerfile/nodejs
+script:
+  - npm install
+  - npm test
